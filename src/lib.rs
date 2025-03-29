@@ -74,7 +74,7 @@
 //! RUST_LOG=frameless=debug
 //! polkadot-omni-node \
 //! 	--chain ./chain_spec.json \
-//! 	--dev-block-time 6000
+//! 	--dev-block-time 6000 \
 //! 	--tmp
 //! ```
 //!
