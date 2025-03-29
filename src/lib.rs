@@ -45,30 +45,44 @@
 //! First:
 //!
 //! ```text
-//! cargo install --force --git https://github.com/kianenigma/pba-omni-node
+//! cargo install polkadot-omni-node --locked
+//! cargo install chain-spec-builder --locked
 //! ```
 //!
-//! Then, you can run:
+//! Then build the Wasm runtime:
 //!
 //! ```text
-//! # build the wasm runtime, possibly with log targets.
+//! //! # build the wasm runtime, possibly with log targets.
 //! RUST_LOG=frameless=info cargo build --release
+//! ```
+//!
+//! Then create a chain-spec using the Wasm runtime:
+//!
+//! ```text
+//! chain-spec-builder create \
+//!     --chain-name pba-frameless \
+//!     --runtime ./target/release/wbuild/runtime/runtime.compact.compressed.wasm \
+//!     --relay-chain westend \
+//!     --para-id 1000 \
+//!     default
+//! ```
+//!
+//! Then, run the chain using the omni-node:
+//!
+//! ```text
 //! # pass it to the node
 //! RUST_LOG=frameless=debug
-//! pba-omni-node
-//! 	# the path to the runtime.
-//! 	--runtime ./target/release/wbuild/runtime/runtime.wasm \
-//! 	# ensures we spin up a new database each time.
+//! polkadot-omni-node \
+//! 	--chain chain_spec.json \
+//! 	--dev-block-time 6000
 //! 	--tmp \
-//! 	# tweak the blocktime, if you want.
-//! 	--consensus manual-seal-1000
 //! ```
 //!
 //! This will launch your chain with no initial state, yay! Try reading a few keys from the state
 //! now:
 //!
 //! ```text
-//! wscat -c 127.0.0.1:9944 -x '{"jsonrpc":"2.0", "id":1, "method":"state_getStorage", "params": ["76616c7565"] }`
+//! wscat -c 127.0.0.1:9944 -x '{"jsonrpc":"2.0", "id":1, "method":"state_getStorage", "params": ["76616c7565"] }'
 //! ```
 //!
 //! Or equivalently:
@@ -80,13 +94,15 @@
 //! Can you guess what is this?
 //!
 //! ```text
-//! wscat -c 127.0.0.1:9944 -x '{"jsonrpc":"2.0", "id":1, "method":"state_getStorage", "params": ["3a636f6465"] }
+//! wscat -c 127.0.0.1:9944 -x '{"jsonrpc":"2.0", "id":1, "method":"state_getStorage", "params": ["3a636f6465"] }'
+//! curl -X POST -H "Content-Type: application/json" -d '{"jsonrpc":"2.0", "id":1, "method":"state_getStorage", "params": ["3a636f6465"] }' http://127.0.0.1:9944
 //! ```
 //!
 //! If you want to try submitting a transaction, you can use the following:
 //!
 //! ```text
 //! wscat -c ws://127.0.0.1:9944 -x '{"jsonrpc":"2.0", "id":1, "method":"author_submitExtrinsic", "params": [""]}'
+//! curl -X POST -H "Content-Type: application/json" -d '{"jsonrpc":"2.0", "id":1, "method":"author_submitExtrinsic", "params": [""]}' http://127.0.0.1:9944
 //! ```
 //!
 //! You can use the `encode_examples` below to get an encoded extrinsic.
@@ -100,7 +116,7 @@
 //!
 //! ### Understanding Chain Specs
 //!
-//! Let's quickly explore how the chian-spec builder works:
+//! Let's quickly explore how the chain-spec builder works:
 //!
 //! * The chain spec is a JSON file describing what the the initial specification of the chain is.
 //! * It is an important feature of the omni-node-driven future of Polkadot.
@@ -716,6 +732,7 @@ mod tests {
 		//
 		// ```
 		// wscat -c ws://127.0.0.1:9944 -x '{"jsonrpc":"2.0", "id":1, "method":"author_submitExtrinsic", "params": ["0x123"]}'
+		// curl -X POST -H "Content-Type: application/json" -d '{"jsonrpc":"2.0", "id":1, "method":"author_submitExtrinsic", "params": ["0x123"]}' http://127.0.0.1:9944
 		// ```
 		let call = Call::SetValue { value: 1234 };
 		let unsigned_ext = SignedExtrinsic::new(call, None).unwrap();
