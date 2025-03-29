@@ -73,9 +73,9 @@
 //! # pass it to the node
 //! RUST_LOG=frameless=debug
 //! polkadot-omni-node \
-//! 	--chain chain_spec.json \
+//! 	--chain ./chain_spec.json \
 //! 	--dev-block-time 6000
-//! 	--tmp \
+//! 	--tmp
 //! ```
 //!
 //! This will launch your chain with no initial state, yay! Try reading a few keys from the state
