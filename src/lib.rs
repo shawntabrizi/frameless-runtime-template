@@ -46,7 +46,7 @@
 //!
 //! ```text
 //! cargo install polkadot-omni-node --locked
-//! cargo install chain-spec-builder --locked
+//! cargo install staging-chain-spec-builder --locked
 //! ```
 //!
 //! Then build the Wasm runtime:
